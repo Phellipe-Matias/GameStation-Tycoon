@@ -120,14 +120,18 @@ function tree(x,z){const s=.8+Math.random()*.6;const t=new THREE.Mesh(new THREE.
  for(let i=0;i<3;i++){const l=new THREE.Mesh(new THREE.IcosahedronGeometry((1.3-i*.25)*s,1),new THREE.MeshStandardMaterial({color:0x3d7a3a+i*0x0a1408,roughness:.9,flatShading:true}));l.position.set(x,(2.6+i*.7)*s,z);l.castShadow=true;scene.add(l)}}
 for(let x=-130;x<=130;x+=10)if(Math.abs(x)>18)tree(x+Math.random()*3,26.2);
 for(let x=-130;x<=130;x+=9)tree(x+Math.random()*3,-13+Math.random()*5);
-function car(c){const g=new THREE.Group();const M=new THREE.MeshStandardMaterial({color:c,roughness:.3,metalness:.55});
+const gltf=new THREE.GLTFLoader(),CAR_YAW=Math.PI/2; // se os carros andarem de lado/de ré, troque CAR_YAW (ex.: -Math.PI/2)
+function car(c,name){const g=new THREE.Group();scene.add(g);
+ gltf.load('models/cars/'+name+'.glb',o=>{const m=o.scene;m.scale.setScalar(1.45);m.rotation.y=CAR_YAW;m.traverse(x=>{if(x.isMesh)x.castShadow=true});
+  m.updateMatrixWorld(true);m.position.y-=new THREE.Box3().setFromObject(m).min.y;g.add(m)},undefined,()=>g.add(carBox(c)));return g}
+function carBox(c){const g=new THREE.Group();const M=new THREE.MeshStandardMaterial({color:c,roughness:.3,metalness:.55});
  const b=new THREE.Mesh(new THREE.BoxGeometry(4.2,.8,1.8),M);b.position.y=.65;const k=new THREE.Mesh(new THREE.BoxGeometry(2.2,.7,1.6),new THREE.MeshStandardMaterial({color:0x10151f,roughness:.1,metalness:.8}));k.position.set(-.2,1.3,0);
  g.add(b,k);for(const sx of[-1.4,1.4])for(const sz of[-.9,.9]){const w=new THREE.Mesh(new THREE.CylinderGeometry(.36,.36,.3,14),new THREE.MeshStandardMaterial({color:0x111111}));w.rotation.x=Math.PI/2;w.position.set(sx,.36,sz);g.add(w)}
  for(const sz of[-.6,.6]){const h=new THREE.Mesh(new THREE.BoxGeometry(.05,.15,.35),new THREE.MeshBasicMaterial({color:0xfff6d0,toneMapped:false}));h.position.set(2.12,.7,sz);g.add(h)}
  g.traverse(o=>o.castShadow=true);scene.add(g);return g}
-car(0xc0392b).position.set(-14,0,10.9);car(0x2e86de).position.set(15,0,10.9);
+car(0xc0392b,'sedan').position.set(-14,0,10.9);car(0x2e86de,'suv').position.set(15,0,10.9);
 solids.push({x0:-16.2,x1:-11.8,z0:10,z1:11.8},{x0:12.8,x1:17.2,z0:10,z1:11.8});
-const mv=[car(0xf1c40f),car(0x27ae60),car(0xecf0f1)];mv[0].position.set(-40,0,13.6);mv[1].position.set(30,0,18.8);mv[1].rotation.y=Math.PI;mv[2].position.set(70,0,18.8);mv[2].rotation.y=Math.PI;
+const mv=[car(0xf1c40f,'taxi'),car(0x27ae60,'van'),car(0xecf0f1,'hatchback-sports')];mv[0].position.set(-40,0,13.6);mv[1].position.set(30,0,18.8);mv[1].rotation.y=Math.PI;mv[2].position.set(70,0,18.8);mv[2].rotation.y=Math.PI;
 
 /* ---------- pessoas ---------- */
 function person(c){const g=new THREE.Group(),m=col=>new THREE.MeshStandardMaterial({color:col,roughness:.8});
